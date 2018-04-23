@@ -293,15 +293,21 @@ public class KThread {
 
 	Machine.interrupt().disable();
 
-	if (JoinQueue == null){
+	if (KThread.currentThread.isJoined == true){
+		return;
+		}
+		
+
+	if (JoinQueue == null ){
 		JoinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
 	    	JoinQueue.acquire(this);
 	}	
 	if (status != statusFinished){
 		JoinQueue.waitForAccess(currentThread);
-		
 		currentThread.sleep();
 	}
+
+	
 
 	Machine.interrupt().enable();
 
@@ -532,12 +538,15 @@ public class KThread {
 	// Aqui le agregamos una variable al ping test con el Wait time,
 	// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
 	KThread t1 = new KThread(new PingTest(1,1000));
-	KThread t2 = new KThread(new PingTest(2,50));
-	KThread t3 = new KThread(new PingTest(3,500));
+	KThread t2 = new KThread(new PingTest(2,1000));
+	KThread t3 = new KThread(new PingTest(3,1000));
 	
 	t1.fork();
 	t1.join();
+
 	t2.fork();
+	t1.join();
+
 	t3.fork();
 	
     }
