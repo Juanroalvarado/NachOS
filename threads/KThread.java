@@ -2,6 +2,8 @@ package nachos.threads;
 
 import nachos.machine.*;
 
+import java.util.Random;
+
 /**
  * A KThread is a thread that can be used to execute Nachos kernel code. Nachos
  * allows multiple threads to run concurrently.
@@ -186,6 +188,18 @@ public class KThread {
 	
 	Machine.interrupt().disable();
 
+	JoinQueue = currentThread.JoinQueue;
+	
+	if (JoinQueue != null ){
+		KThread q = JoinQueue.nextThread();
+		while (q != null) {
+			q.ready();
+			//currentThread.JoinQueue.acquire(q); 		
+			q = JoinQueue.nextThread();
+			JoinQueue.print();
+		}
+	}
+	
 	Machine.autoGrader().finishingCurrentThread();
 
 	Lib.assertTrue(toBeDestroyed == null);
@@ -193,7 +207,7 @@ public class KThread {
 
 
 	currentThread.status = statusFinished;
-	
+
 	sleep();
     }
 
@@ -277,6 +291,20 @@ public class KThread {
 
 	Lib.assertTrue(this != currentThread);
 
+	Machine.interrupt().disable();
+
+	if (JoinQueue == null){
+		JoinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
+	    	JoinQueue.acquire(this);
+	}	
+	if (status != statusFinished){
+		JoinQueue.waitForAccess(currentThread);
+		
+		currentThread.sleep();
+	}
+
+	Machine.interrupt().enable();
+
     }
 
     /**
@@ -344,8 +372,10 @@ public class KThread {
 		  + " to: " + toString());
 
 	currentThread = this;
-
+	
 	tcb.contextSwitch();
+	
+		
 
 	currentThread.restoreState();
     }
@@ -382,31 +412,185 @@ public class KThread {
     }
 
     private static class PingTest implements Runnable {
-	PingTest(int which) {
+	PingTest(int which, int time) {
 	    this.which = which;
+	    this.time = time;
 	}
 	
 	public void run() {
+	    ThreadedKernel.alarm.waitUntil(time);
 	    for (int i=0; i<5; i++) {
 		System.out.println("*** thread " + which + " looped "
 				   + i + " times");
+		
 		currentThread.yield();
 	    }
 	}
 
 	private int which;
+	private int time;
     }
 
-    /**
-     * Tests whether this module is working.
-     */
+    class sumador implements Runnable
+	{
+	
+	int ThreadId;
+	valor val;
+	sumador ( int a,valor b)
+	{
+		
+		this.ThreadId = a;
+		this.val = b;
+		
+	}
+	
+	public void run()
+	{
+	
+	    int i;
+		 Random randomGenerator = new Random();
+		for (i=0;i<=100; i++)
+		{
+			val.sumar(this.ThreadId);
+		try
+		  {
+		  int randomInt = randomGenerator.nextInt(100);
+		  Thread.sleep(randomInt);  
+		 
+		  }catch (InterruptedException ie)
+		  {
+		  System.out.println(ie.getMessage());
+		  }
+		}
+	}
+
+	}
+
+	class restador implements Runnable
+	{
+	
+		int ThreadId;
+		valor val;
+		restador ( int a,valor b)
+		{
+	
+			this.ThreadId = a;
+			this.val = b;
+		
+		}
+	
+		public void run()
+		{
+		    int i;
+			 Random randomGenerator = new Random();
+			for (i=0;i<=100; i++)
+		{
+			val.restar(this.ThreadId);
+			try
+			  {
+			  int randomInt = randomGenerator.nextInt(100);
+			  Thread.sleep(randomInt);  
+			 
+			  }catch (InterruptedException ie)
+			  {
+			  System.out.println(ie.getMessage());
+			  }
+		}
+		}
+
+	}
+
+	class valor
+	{
+		int num;
+	
+		valor()
+		{
+			this.num=0;
+		}
+	
+		public synchronized void sumar(int threadid)
+		{
+			this.num++;
+			System.out.println("THREAD " + threadid + ": " + this.num);
+		
+		}
+
+		public synchronized void restar(int threadid)
+		{
+			this.num--;
+			System.out.println("THREAD "+ threadid + ": " + this.num);
+		
+		}
+	
+	}
+
+    /** Tests wait */
+
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
+	// Aqui le agregamos una variable al ping test con el Wait time,
+	// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
+	KThread t1 = new KThread(new PingTest(1,1000));
+	KThread t2 = new KThread(new PingTest(2,50));
+	KThread t3 = new KThread(new PingTest(3,500));
 	
-	new KThread(new PingTest(1)).setName("forked thread").fork();
-	new PingTest(0).run();
+	t1.fork();
+	t1.join();
+	t2.fork();
+	t3.fork();
+	
     }
 
+    
+	
+    /** test communicator
+
+    public static void selfTest() {
+		Lib.debug(dbgThread, "Enter KThread.selfTest");
+
+		final Communicator com = new Communicator();
+
+		KThread thread1 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 1 -- Start/Speaking");
+				com.speak(0);
+				System.out.println("Thread 1 -- Finish/Speaking");
+			}
+		});
+
+		KThread thread2 = new KThread(new Runnable() {
+		    public void run() {
+		         System.out.println("Thread 2 -- Start/Listening");
+			 com.listen();
+		         System.out.println("Thread 2 -- Finish/Listening");
+		    }
+		});
+
+		thread1.fork();
+		thread2.fork();
+		thread1.join();
+		thread2.join();	
+    }
+
+
+    */
+    /** 
+    public static void selfTest() {
+		Lib.debug(dbgThread, "Enter KThread.selfTest");
+		
+		valor val = new valor();
+		
+		sumador s = new sumador(1,val);
+		KThread t1 = new KThread(s);
+		t1.fork();
+
+		restador r = new restador(2,val);
+		KThread t2 = new KThread(r);
+		t2.fork();
+    }
+    
+	*/
     private static final char dbgThread = 't';
 
     /**
@@ -422,6 +606,7 @@ public class KThread {
     private static final int statusBlocked = 3;
     private static final int statusFinished = 4;
 
+   
     /**
      * The status of this thread. A thread can either be new (not yet forked),
      * ready (on the ready queue but not running), running, or blocked (not
@@ -440,6 +625,12 @@ public class KThread {
     /** Number of times the KThread constructor was called. */
     private static int numCreated = 0;
 
+    /** Crear un joinQueue */
+    private static ThreadQueue JoinQueue = null;
+
+    /** variables de waitUnitl */
+
+    
     private static ThreadQueue readyQueue = null;
     private static KThread currentThread = null;
     private static KThread toBeDestroyed = null;

@@ -1,5 +1,5 @@
 package nachos.threads;
-
+import java.util.PriorityQueue;
 import nachos.machine.*;
 
 /**
@@ -27,6 +27,21 @@ public class Alarm {
      * that should be run.
      */
     public void timerInterrupt() {
+	Lib.assertTrue(Machine.interrupt().disabled());
+	
+	long curTime = Machine.timer().getTime();
+
+	while(!waitQueue.isEmpty() && waitQueue.peek().time <= curTime){
+		if (waitQueue.peek().time <= curTime){
+			waitQueue.poll().thread.ready();
+		} else {
+			break;
+		}
+		
+	}
+
+	Machine.interrupt().enable();
+
 	KThread.currentThread().yield();
     }
 
@@ -45,9 +60,94 @@ public class Alarm {
      * @see	nachos.machine.Timer#getTime()
      */
     public void waitUntil(long x) {
-	// for now, cheat just to get something working (busy waiting is bad)
-	long wakeTime = Machine.timer().getTime() + x;
-	while (wakeTime > Machine.timer().getTime())
-	    KThread.yield();
+	Machine.interrupt().disable();
+	
+	/** 
+	* Crear un nuevo WaitThread con el currentThread y el X (waittime)
+	* agregar a priority Queue
+	*/
+	long upTime = Machine.timer().getTime() + x;
+
+	WaitingThread wThread = new WaitingThread(KThread.currentThread(), upTime);	
+				
+	waitQueue.add(wThread);
+
+	// dormir thread
+	KThread.sleep();	
+	
+	Machine.interrupt().enable();
+
     }
+    
+    private class WaitingThread implements Comparable {
+
+	WaitingThread(KThread thread,long time) {  
+		this.thread = thread;
+		this.time = time;
+		
+	    }
+
+		public int compareTo(Object o) {
+		    WaitingThread toOccur = (WaitingThread) o;
+
+		    // can't return 0 for unequal objects, so check all fields
+		    if (time < toOccur.time)
+		    return -1;
+		    else if (time > toOccur.time)
+		    return 1;
+		    else
+			return thread.compareTo(toOccur.thread);        
+		}
+
+    long time;
+    KThread thread;
+
+    }
+
+    private static class AlarmTest implements Runnable {
+	AlarmTest(long x) {
+	    this.time = x;
+	}
+	
+	public void run() {
+
+        System.out.print(KThread.currentThread().getName() + " alarm\n");	
+        ThreadedKernel.alarm.waitUntil(time);
+        System.out.print(KThread.currentThread().getName() + " woken up \n");	
+
+	}
+
+    private long  time; 
+    }
+
+    public static void selfTest() {
+
+    System.out.print("Enter Alarm.selfTest\n");	
+
+	Runnable r = new Runnable() {
+	    public void run() {
+                KThread t[] = new KThread[10];
+
+                for (int i=0; i<10; i++) {
+                     t[i] = new KThread(new AlarmTest(160 + i*20));
+                     t[i].setName("Thread" + i).fork();
+                }
+                for (int i=0; i<10000; i++) {
+                    KThread.yield();
+                }
+            }
+    };
+
+    KThread t = new KThread(r);
+    t.setName("Alarm SelfTest");
+    t.fork();
+    KThread.yield();
+
+    t.join();
+
+    System.out.print("Leave Alarm.selfTest\n");	
+
+    }
+
+   private PriorityQueue<WaitingThread> waitQueue = new PriorityQueue<WaitingThread>();
 }

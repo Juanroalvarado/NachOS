@@ -74,8 +74,10 @@ public class Semaphore {
 	
 	public void run() {
 	    for (int i=0; i<10; i++) {
-		ping.P();
+		ping.V();
+		
 		pong.V();
+		
 	    }
 	}
 
