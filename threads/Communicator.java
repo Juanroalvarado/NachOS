@@ -1,5 +1,4 @@
 package nachos.threads;
-
 import nachos.machine.*;
 
 /**
@@ -14,9 +13,9 @@ public class Communicator {
      * Allocate a new communicator.
      */
     public Communicator() {
-	conditionLock = new Lock();
-	listener = new Condition2(conditionLock);
-	speaker = new Condition2(conditionLock);
+		conditionLock = new Lock();
+		listener = new Condition2(conditionLock);
+		speaker = new Condition2(conditionLock);
     
     }
 
@@ -32,19 +31,20 @@ public class Communicator {
      */
     public void speak(int word) {
 
-	conditionLock.acquire();
-	speakers += 1;
-	
-	while (boolWord == true || listeners < 1) {
-		speaker.sleep();
-	} 	
-	// speaker says word
+		conditionLock.acquire();
+		speakers += 1;
 
-	boolWord = true;
-	listener.wakeAll();
-	
-	speakers -= 1;
-	conditionLock.release();
+		while (boolWord == true || listeners < 1) {
+            System.out.println("Speaker sleeps");
+			speaker.sleep();
+		}
+		// speaker says word
+
+		boolWord = true;
+		listener.wakeAll();
+        sound = word;
+		speakers -= 1;
+		conditionLock.release();
 
     }
 
@@ -55,26 +55,62 @@ public class Communicator {
      * @return	the integer transferred.
      */    
     public int listen() {
-	conditionLock.acquire();
-	listeners += 1;
-	
-	while (boolWord == false){
-		speaker.wakeAll();
-		listener.sleep();	
-	}
+        int word;
+		conditionLock.acquire();
+		listeners += 1;
 
-	//listener receives word
-	boolWord = false;
-	
-	listeners -= 1;
-	conditionLock.release();
-	return 0;
+		while (boolWord == false){
+
+			speaker.wakeAll();
+			listener.sleep();
+            System.out.println("Listener sleeps");
+		}
+
+		//listener receives word
+		boolWord = false;
+        word = sound;
+		listeners -= 1;
+		conditionLock.release();
+		return word;
     }
+    /*
+	public static void selfTest() {
+        Lib.debug(dbgThread, "Enter Communicator.selfTest");
+
+		final Communicator com = new Communicator();
+
+		KThread thread1 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 1 -- Start/Speaking");
+				com.speak(0);
+				System.out.println("Thread 1 -- Finish/Speaking");
+			}
+		});
+
+		KThread thread2 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 2 -- Start/Listening");
+				com.listen();
+				System.out.println("Thread 2 -- Finish/Listening");
+			}
+		});
+
+		thread1.fork();
+		thread2.fork();
+		//thread1.join();
+		//thread2.join();
+	}
+    */
+    private static final char dbgThread = 't';
 
     private Lock conditionLock;
     private Condition2 listener;
     private Condition2 speaker;
     private int listeners;
-    private int speakers; 
-    private boolean boolWord; 
+    private int speakers;
+    private int sound;
+    private boolean boolWord;
+
+
+
 }

@@ -91,12 +91,17 @@ public class Alarm {
 		    WaitingThread toOccur = (WaitingThread) o;
 
 		    // can't return 0 for unequal objects, so check all fields
-		    if (time < toOccur.time)
-		    return -1;
-		    else if (time > toOccur.time)
-		    return 1;
-		    else
-			return thread.compareTo(toOccur.thread);        
+		    if (time < toOccur.time){
+			return -1;
+			}
+		    
+		    else if (time > toOccur.time){
+			return 1;
+			}
+		    
+		    else {
+			return thread.compareTo(toOccur.thread);
+			}  
 		}
 
     long time;
@@ -104,50 +109,41 @@ public class Alarm {
 
     }
 
-    private static class AlarmTest implements Runnable {
-	AlarmTest(long x) {
-	    this.time = x;
+    private static class PingTest implements Runnable {
+	PingTest(int which, int time) {
+	    this.which = which;
+	    this.time = time;
 	}
 	
 	public void run() {
+	    ThreadedKernel.alarm.waitUntil(time);
+	    for (int i=0; i<5; i++) {
+		System.out.println("*** thread " + which + " looped "
+				   + i + " times");
 
-        System.out.print(KThread.currentThread().getName() + " alarm\n");	
-        ThreadedKernel.alarm.waitUntil(time);
-        System.out.print(KThread.currentThread().getName() + " woken up \n");	
-
+		KThread.yield();
+	    }
 	}
 
-    private long  time; 
+	private int which;
+	private int time;
     }
 
     public static void selfTest() {
+		Lib.debug(dbgThread, "Enter Alarm.selfTest");
+		// Aqui le agregamos una variable al ping test con el Wait time,
+		// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
+		KThread t1 = new KThread(new PingTest(1,1000));
+		KThread t2 = new KThread(new PingTest(2,50));
+		KThread t3 = new KThread(new PingTest(3,500));
 
-    System.out.print("Enter Alarm.selfTest\n");	
-
-	Runnable r = new Runnable() {
-	    public void run() {
-                KThread t[] = new KThread[10];
-
-                for (int i=0; i<10; i++) {
-                     t[i] = new KThread(new AlarmTest(160 + i*20));
-                     t[i].setName("Thread" + i).fork();
-                }
-                for (int i=0; i<10000; i++) {
-                    KThread.yield();
-                }
-            }
-    };
-
-    KThread t = new KThread(r);
-    t.setName("Alarm SelfTest");
-    t.fork();
-    KThread.yield();
-
-    t.join();
-
-    System.out.print("Leave Alarm.selfTest\n");	
-
+		t1.fork();
+		t2.fork();
+		t3.fork();
+	
     }
+	
+   private static final char dbgThread = 't';
 
    private PriorityQueue<WaitingThread> waitQueue = new PriorityQueue<WaitingThread>();
 }

@@ -293,11 +293,6 @@ public class KThread {
 
 	Machine.interrupt().disable();
 
-	if (KThread.currentThread.isJoined == true){
-		return;
-		}
-		
-
 	if (JoinQueue == null ){
 		JoinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
 	    	JoinQueue.acquire(this);
@@ -306,8 +301,6 @@ public class KThread {
 		JoinQueue.waitForAccess(currentThread);
 		currentThread.sleep();
 	}
-
-	
 
 	Machine.interrupt().enable();
 
@@ -418,13 +411,11 @@ public class KThread {
     }
 
     private static class PingTest implements Runnable {
-	PingTest(int which, int time) {
+	PingTest(int which) {
 	    this.which = which;
-	    this.time = time;
 	}
 	
 	public void run() {
-	    ThreadedKernel.alarm.waitUntil(time);
 	    for (int i=0; i<5; i++) {
 		System.out.println("*** thread " + which + " looped "
 				   + i + " times");
@@ -434,156 +425,58 @@ public class KThread {
 	}
 
 	private int which;
-	private int time;
     }
 
-    class sumador implements Runnable
-	{
-	
-	int ThreadId;
-	valor val;
-	sumador ( int a,valor b)
-	{
-		
-		this.ThreadId = a;
-		this.val = b;
-		
-	}
-	
-	public void run()
-	{
-	
-	    int i;
-		 Random randomGenerator = new Random();
-		for (i=0;i<=100; i++)
-		{
-			val.sumar(this.ThreadId);
-		try
-		  {
-		  int randomInt = randomGenerator.nextInt(100);
-		  Thread.sleep(randomInt);  
-		 
-		  }catch (InterruptedException ie)
-		  {
-		  System.out.println(ie.getMessage());
-		  }
-		}
-	}
+ 
 
-	}
-
-	class restador implements Runnable
-	{
-	
-		int ThreadId;
-		valor val;
-		restador ( int a,valor b)
-		{
-	
-			this.ThreadId = a;
-			this.val = b;
-		
-		}
-	
-		public void run()
-		{
-		    int i;
-			 Random randomGenerator = new Random();
-			for (i=0;i<=100; i++)
-		{
-			val.restar(this.ThreadId);
-			try
-			  {
-			  int randomInt = randomGenerator.nextInt(100);
-			  Thread.sleep(randomInt);  
-			 
-			  }catch (InterruptedException ie)
-			  {
-			  System.out.println(ie.getMessage());
-			  }
-		}
-		}
-
-	}
-
-	class valor
-	{
-		int num;
-	
-		valor()
-		{
-			this.num=0;
-		}
-	
-		public synchronized void sumar(int threadid)
-		{
-			this.num++;
-			System.out.println("THREAD " + threadid + ": " + this.num);
-		
-		}
-
-		public synchronized void restar(int threadid)
-		{
-			this.num--;
-			System.out.println("THREAD "+ threadid + ": " + this.num);
-		
-		}
-	
-	}
-
-    /** Tests wait */
+    /** Tests join
 
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
 	// Aqui le agregamos una variable al ping test con el Wait time,
 	// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
-	KThread t1 = new KThread(new PingTest(1,1000));
-	KThread t2 = new KThread(new PingTest(2,1000));
-	KThread t3 = new KThread(new PingTest(3,1000));
+	KThread t1 = new KThread(new PingTest(1));
+	KThread t2 = new KThread(new PingTest(2));
+	KThread t3 = new KThread(new PingTest(3));
 	
 	t1.fork();
-	t1.join();
-
+	
 	t2.fork();
-	t1.join();
 
 	t3.fork();
 	
     }
+	*/
 
-    
-	
-    /** test communicator
-
-    public static void selfTest() {
-		Lib.debug(dbgThread, "Enter KThread.selfTest");
+	public static void selfTest() {
+		Lib.debug(dbgThread, "Enter Communicator.selfTest");
 
 		final Communicator com = new Communicator();
 
 		KThread thread1 = new KThread(new Runnable() {
 			public void run() {
 				System.out.println("Thread 1 -- Start/Speaking");
-				com.speak(0);
+				System.out.println("Thread 1 -- said 1 ");
+				com.speak(1);
 				System.out.println("Thread 1 -- Finish/Speaking");
 			}
 		});
 
 		KThread thread2 = new KThread(new Runnable() {
-		    public void run() {
-		         System.out.println("Thread 2 -- Start/Listening");
-			 com.listen();
-		         System.out.println("Thread 2 -- Finish/Listening");
-		    }
+			public void run() {
+				System.out.println("Thread 2 -- Start/Listening");
+				System.out.println("Thread 2 -- heard " + com.listen());
+				System.out.println("Thread 2 -- Finish/Listening");
+			}
 		});
 
 		thread1.fork();
+
 		thread2.fork();
-		thread1.join();
-		thread2.join();	
-    }
+		//thread1.join();
+		//thread2.join();
+	}
 
-
-    */
     /** 
     public static void selfTest() {
 		Lib.debug(dbgThread, "Enter KThread.selfTest");
