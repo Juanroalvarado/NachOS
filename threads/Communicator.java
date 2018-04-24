@@ -73,7 +73,7 @@ public class Communicator {
 		conditionLock.release();
 		return word;
     }
-    /*
+
 	public static void selfTest() {
         Lib.debug(dbgThread, "Enter Communicator.selfTest");
 
@@ -100,7 +100,7 @@ public class Communicator {
 		//thread1.join();
 		//thread2.join();
 	}
-    */
+
     private static final char dbgThread = 't';
 
     private Lock conditionLock;

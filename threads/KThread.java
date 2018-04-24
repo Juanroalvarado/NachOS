@@ -429,7 +429,7 @@ public class KThread {
 
  
 
-    /** Tests join
+    /** Tests join */
 
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
@@ -440,14 +440,14 @@ public class KThread {
 	KThread t3 = new KThread(new PingTest(3));
 	
 	t1.fork();
-	
+	t1.join();
 	t2.fork();
-
+	t2.join();
 	t3.fork();
 	
     }
-	*/
 
+	/**
 	public static void selfTest() {
 		Lib.debug(dbgThread, "Enter Communicator.selfTest");
 
@@ -470,14 +470,42 @@ public class KThread {
 			}
 		});
 
+		KThread thread3 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 3 -- Start/Listening");
+				System.out.println("Thread 3 -- heard " + com.listen());
+				System.out.println("Thread 3 -- Finish/Listening");
+			}
+		});
+
+		KThread thread4 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 4 -- Start/Listening");
+				System.out.println("Thread 4 -- heard " + com.listen());
+				System.out.println("Thread 4 -- Finish/Listening");
+			}
+		});
+
+		KThread thread5 = new KThread(new Runnable() {
+			public void run() {
+				System.out.println("Thread 5 -- Start/speaking");
+				System.out.println("Thread 5 -- said 3 ");
+				com.speak(3);
+				System.out.println("Thread 5 -- Finish/speaking");
+			}
+		});
+
 		thread1.fork();
 
 		thread2.fork();
-		//thread1.join();
-		//thread2.join();
+		thread4.fork();
+
+		thread5.fork();
+
 	}
 
-    /** 
+	*/
+    /**
     public static void selfTest() {
 		Lib.debug(dbgThread, "Enter KThread.selfTest");
 		

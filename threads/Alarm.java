@@ -27,22 +27,22 @@ public class Alarm {
      * that should be run.
      */
     public void timerInterrupt() {
-	Lib.assertTrue(Machine.interrupt().disabled());
-	
-	long curTime = Machine.timer().getTime();
+		Lib.assertTrue(Machine.interrupt().disabled());
 
-	while(!waitQueue.isEmpty() && waitQueue.peek().time <= curTime){
-		if (waitQueue.peek().time <= curTime){
-			waitQueue.poll().thread.ready();
-		} else {
-			break;
+		long curTime = Machine.timer().getTime();
+
+		while(!waitQueue.isEmpty() && waitQueue.peek().time <= curTime){
+			if (waitQueue.peek().time <= curTime){
+				waitQueue.poll().thread.ready();
+			} else {
+				break;
+			}
+
 		}
-		
-	}
 
-	Machine.interrupt().enable();
+		Machine.interrupt().enable();
 
-	KThread.currentThread().yield();
+		KThread.currentThread().yield();
     }
 
     /**
@@ -60,22 +60,22 @@ public class Alarm {
      * @see	nachos.machine.Timer#getTime()
      */
     public void waitUntil(long x) {
-	Machine.interrupt().disable();
-	
-	/** 
-	* Crear un nuevo WaitThread con el currentThread y el X (waittime)
-	* agregar a priority Queue
-	*/
-	long upTime = Machine.timer().getTime() + x;
+		Machine.interrupt().disable();
 
-	WaitingThread wThread = new WaitingThread(KThread.currentThread(), upTime);	
-				
-	waitQueue.add(wThread);
+		/**
+		* Crear un nuevo WaitThread con el currentThread y el X (waittime)
+		* agregar a priority Queue
+		*/
+		long upTime = Machine.timer().getTime() + x;
 
-	// dormir thread
-	KThread.sleep();	
-	
-	Machine.interrupt().enable();
+		WaitingThread wThread = new WaitingThread(KThread.currentThread(), upTime);
+
+		waitQueue.add(wThread);
+
+		// dormir thread
+		KThread.sleep();
+
+		Machine.interrupt().enable();
 
     }
     
@@ -92,15 +92,15 @@ public class Alarm {
 
 		    // can't return 0 for unequal objects, so check all fields
 		    if (time < toOccur.time){
-			return -1;
+				return -1;
 			}
 		    
 		    else if (time > toOccur.time){
-			return 1;
+				return 1;
 			}
 		    
 		    else {
-			return thread.compareTo(toOccur.thread);
+				return thread.compareTo(toOccur.thread);
 			}  
 		}
 
@@ -140,7 +140,6 @@ public class Alarm {
 		t1.fork();
 		t2.fork();
 		t3.fork();
-	
     }
 	
    private static final char dbgThread = 't';
