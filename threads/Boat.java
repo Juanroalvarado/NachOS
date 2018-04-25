@@ -9,8 +9,8 @@ public class Boat
     {
 	BoatGrader b = new BoatGrader();
 
-	System.out.println("\n ***Testing Boats with only 2 children***");
-	begin(3, 3, b);
+	System.out.println("\n ***Testing Boats with adult 1 and child 2***");
+	begin(1, 2, b);
 
 //	System.out.println("\n ***Testing Boats with 2 children, 1 adult***");
 //  	begin(1, 2, b);
@@ -68,34 +68,32 @@ public class Boat
             Adult.setName("Adult " + i).fork();
         }
 
-        
-        boat.acquire();
-        while (ChildrenOnMolokai + AdultsOnMolokai != adults + children){
-            mainCondition.sleep();
-        }
-        boat.release();
+
+
+
+
     }
 
     static void AdultItinerary()
     {
-        /** lock en boat */
-        boat.acquire();
-        AdultsOnOahu += 1;
+
 	/* This is where you should put your solutions. Make calls
 	   to the BoatGrader to show that it is synchronized. For
 	   example:
 	       bg.AdultRowToMolokai();
 	   indicates that an adult has rowed the boat across to Molokai
 	*/
+        /** lock en boat */
+        boat.acquire();
+        AdultsOnOahu += 1;
 
         while (!atOahu || ChildrenOnOahu > 1){
-            System.out.println("sleep ");
             ChildAtOahu.wake();
             AdultAtOahu.sleep();
         }
 
         AdultsOnOahu -= 1;
-        System.out.println(KThread.currentThread().getName());
+        //System.out.println(KThread.currentThread().getName() + " rowing to molokai");
         bg.AdultRowToMolokai();
 
         /** vuelve el estado de boat en false*/
@@ -104,8 +102,6 @@ public class Boat
 
         ChildAtMolokai.wake();
         boat.release();
-
-
     }
 
     static void ChildItinerary()
@@ -122,17 +118,15 @@ public class Boat
                 if (travelling){
 
                     ChildrenOnOahu -= 2;
-
-                    //System.out.println(KThread.currentThread().getName());
+                    //System.out.println(KThread.currentThread().getName() + " riding to Molokai as passenger");
                     bg.ChildRideToMolokai();
                     atOahu = false;
                     ChildrenOnMolokai += 2;
                     travelling = false;
 
                 } else {
-                    //System.out.println(KThread.currentThread().getName());
+                    //System.out.println(KThread.currentThread().getName() + " rowing to Molokai");
                     bg.ChildRowToMolokai();
-
                     travelling = true;
                     ChildAtOahu.wake();
                     ChildAtMolokai.sleep();
@@ -140,15 +134,13 @@ public class Boat
 
             }
             else if (!atOahu) {
-
+                //System.out.println(KThread.currentThread().getName() + " rowing to Oahu");
                 ChildrenOnMolokai -= 1;
                 bg.ChildRowToOahu();
                 atOahu = true;
-
                 ChildrenOnOahu += 1;
             }
             else {
-                System.out.println("wake ");
                 AdultAtOahu.wake();
                 ChildAtOahu.sleep();
 
@@ -161,9 +153,19 @@ public class Boat
         }
 
         /** vuelve el estado de boat en false*/
+        //AdultAtOahu.wakeAll();
+        ChildAtMolokai.wakeAll();
+        ChildAtOahu.wakeAll();
+        mainCondition.wake();
         boat.release();
-        System.out.println("finish ");
-        return;
+        System.out.println("Everyone is in molokai ");
+    }
+
+    public static boolean done(int allChilds, int allAdults){
+        if (allAdults + allChilds > ChildrenOnMolokai + AdultsOnMolokai && !atOahu)
+            return true;
+        else
+            return false;
     }
 
     static void SampleItinerary()

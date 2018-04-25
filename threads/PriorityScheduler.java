@@ -49,7 +49,7 @@ public class PriorityScheduler extends Scheduler {
     public int getPriority(KThread thread) {
         Lib.assertTrue(Machine.interrupt().disabled());
 
-        return getThreadState(thread).getPriority();
+        return getThreadState(thread).priority;
     }
 
     public int getEffectivePriority(KThread thread) {
@@ -153,9 +153,9 @@ public class PriorityScheduler extends Scheduler {
         }).setName("Thread3");
         Machine.interrupt().disable();
         ThreadedKernel.scheduler.setPriority(3);
-        ThreadedKernel.scheduler.setPriority(thread1, 7);
+        ThreadedKernel.scheduler.setPriority(thread1, 5);
         ThreadedKernel.scheduler.setPriority(thread2, 7);
-        ThreadedKernel.scheduler.setPriority(thread3, 4);
+        ThreadedKernel.scheduler.setPriority(thread3, 6);
 
         Machine.interrupt().enable();
         thread1.fork();
@@ -177,6 +177,7 @@ public class PriorityScheduler extends Scheduler {
 
         PriorityQueue(boolean transferPriority) {
             this.transferPriority = transferPriority;
+            /** Added priorityQueue for waitingThreads */
             this.threadsWaiting = new java.util.PriorityQueue<ThreadState>();
         }
 
@@ -188,16 +189,16 @@ public class PriorityScheduler extends Scheduler {
             ts.waitForAccess(this);
         }
 
+
         public void acquire(KThread thread) {
             Lib.assertTrue(Machine.interrupt().disabled());
             final ThreadState ts = getThreadState(thread);
-            if (this.resourceHolder != null) {
-                this.resourceHolder.release(this);
+            if (this.owner != null) {
+                this.owner.release(this);
             }
-            this.resourceHolder = ts;
+            this.owner = ts;
             ts.acquire(this);
         }
-
 
 
         public KThread nextThread() {
@@ -215,14 +216,7 @@ public class PriorityScheduler extends Scheduler {
             this.acquire(nextThread.getThread());
 
             return nextThread.getThread();
-
         }
-
-        /** For testing! **/
-        public ThreadState peekNext() {
-            return this.pickNextThread();
-        }
-
         /**
          * Return the next thread that <tt>nextThread()</tt> would return,
          * without modifying the state of this queue.
@@ -230,16 +224,10 @@ public class PriorityScheduler extends Scheduler {
          * @return the next thread that <tt>nextThread()</tt> would
          *         return.
          */
-
-
         protected ThreadState pickNextThread() {
             boolean intStatus = Machine.interrupt().disable();
-
-            //this.threadsWaiting = new java.util.PriorityQueue<ThreadState>(threadsWaiting);
-
             Machine.interrupt().restore(intStatus);
             return this.threadsWaiting.peek();
-
         }
 
         /**
@@ -254,11 +242,12 @@ public class PriorityScheduler extends Scheduler {
             if (!this.transferPriority) {
                 return priorityMinimum;
             } else if (this.priorityChange) {
-                // Recalculate effective priorities
+                /*
                 this.effectivePriority = priorityMinimum;
                 for (final ThreadState curr : this.threadsWaiting) {
                     this.effectivePriority = Math.max(this.effectivePriority, curr.getEffectivePriority());
-                }
+                } */
+                this.effectivePriority = this.threadsWaiting.peek().getEffectivePriority();
                 this.priorityChange = false;
             }
             return effectivePriority;
@@ -266,9 +255,7 @@ public class PriorityScheduler extends Scheduler {
 
         public void print() {
             Lib.assertTrue(Machine.interrupt().disabled());
-            for (final ThreadState ts : this.threadsWaiting) {
-                System.out.println(ts.getEffectivePriority());
-            }
+            // implement me ( if you want )
         }
 
         private void invalidateCachedPriority() {
@@ -276,31 +263,18 @@ public class PriorityScheduler extends Scheduler {
 
             this.priorityChange = true;
 
-            if (this.resourceHolder != null) {
-                resourceHolder.invalidateCachedPriority();
+            if (this.owner != null) {
+                owner.invalidateCachedPriority();
             }
         }
 
         /**
-         *  The list of threads currently waiting.
+           The priorityQueue of threads  waiting.
          */
         protected final java.util.PriorityQueue<ThreadState> threadsWaiting;
-        /**
-         * A reference to the thread currently holding the resource.
-         */
-        protected ThreadState resourceHolder = null;
-        /**
-         * The cached effective priority of this queue.
-         */
+        protected ThreadState owner = null;
         protected int effectivePriority = priorityMinimum;
-        /**
-         * True if the effective priority of this queue has been invalidated.
-         */
         protected boolean priorityChange = false;
-        /**
-         * <tt>true</tt> if this queue should transfer priority from waiting
-         * threads to the owning thread.
-         */
         public boolean transferPriority;
 
     }
@@ -322,19 +296,10 @@ public class PriorityScheduler extends Scheduler {
         public ThreadState(KThread thread) {
             this.thread = thread;
 
-            this.resourcesIHave = new LinkedList<PriorityQueue>();
-            this.resourcesIWant = new LinkedList<PriorityQueue>();
+            this.heldQueues = new LinkedList<PriorityQueue>();
+            this.wantedQueues = new LinkedList<PriorityQueue>();
             setPriority(priorityDefault);
 
-        }
-
-        /**
-         * Return the priority of the associated thread.
-         *
-         * @return the priority of the associated thread.
-         */
-        public int getPriority() {
-            return priority;
         }
 
         /**
@@ -344,12 +309,14 @@ public class PriorityScheduler extends Scheduler {
          */
         public int getEffectivePriority() {
 
-            if (this.resourcesIHave.isEmpty()) {
-                return this.getPriority();
+            if (this.heldQueues.isEmpty()) {
+                return this.priority;
             } else if (this.priorityChange) {
-                this.effectivePriority = this.getPriority();
-                for (final PriorityQueue pq : this.resourcesIHave) {
-                    this.effectivePriority = Math.max(this.effectivePriority, pq.getEffectivePriority());
+                this.effectivePriority = this.priority;
+                for (final PriorityQueue pq : this.heldQueues) {
+                    if (this.effectivePriority < pq.getEffectivePriority()){
+                        this.effectivePriority = pq.getEffectivePriority();
+                    }
                 }
                 this.priorityChange = false;
             }
@@ -366,7 +333,7 @@ public class PriorityScheduler extends Scheduler {
                 return;
             this.priority = priority;
             // force priority invalidation
-            for (final PriorityQueue pq : resourcesIWant) {
+            for (final PriorityQueue pq : wantedQueues) {
                 pq.invalidateCachedPriority();
             }
         }
@@ -384,8 +351,8 @@ public class PriorityScheduler extends Scheduler {
          */
         public void waitForAccess(PriorityQueue waitQueue) {
             this.life = Machine.timer().getTime();
-            this.resourcesIWant.add(waitQueue);
-            this.resourcesIHave.remove(waitQueue);
+            this.wantedQueues.add(waitQueue);
+            this.heldQueues.remove(waitQueue);
             waitQueue.invalidateCachedPriority();
         }
 
@@ -400,8 +367,8 @@ public class PriorityScheduler extends Scheduler {
          * @see nachos.threads.ThreadQueue#nextThread
          */
         public void acquire(PriorityQueue waitQueue) {
-            this.resourcesIHave.add(waitQueue);
-            this.resourcesIWant.remove(waitQueue);
+            this.heldQueues.add(waitQueue);
+            this.wantedQueues.remove(waitQueue);
             this.invalidateCachedPriority();
         }
 
@@ -411,7 +378,7 @@ public class PriorityScheduler extends Scheduler {
           * @param waitQueue The waitQueue corresponding to the relinquished resource.
          */
         public void release(PriorityQueue waitQueue) {
-            this.resourcesIHave.remove(waitQueue);
+            this.heldQueues.remove(waitQueue);
             this.invalidateCachedPriority();
         }
 
@@ -422,7 +389,7 @@ public class PriorityScheduler extends Scheduler {
         private void invalidateCachedPriority() {
             if (this.priorityChange) return;
             this.priorityChange = true;
-            for (final PriorityQueue pq : this.resourcesIWant) {
+            for (final PriorityQueue pq : this.wantedQueues) {
                 pq.invalidateCachedPriority();
             }
         }
@@ -454,25 +421,10 @@ public class PriorityScheduler extends Scheduler {
          */
         protected int priority;
 
-        /**
-         * True if effective priority has been invalidated for this ThreadState.
-         */
         protected boolean priorityChange = false;
-        /**
-         * Holds the effective priority of this Thread State.
-         */
         protected int effectivePriority = priorityMinimum;
-        /**
-         * A list of the queues for which I am the current resource holder.
-         */
-        protected final List<PriorityQueue> resourcesIHave;
-        /**
-         * A list of the queues in which I am waiting.
-         */
-        protected final List<PriorityQueue> resourcesIWant;
-        /**
-         * Time a Thread has lived insed the queue.
-         */
+        protected final List<PriorityQueue> heldQueues;
+        protected final List<PriorityQueue> wantedQueues;
         public long life = Machine.timer().getTime();
     }
 }
