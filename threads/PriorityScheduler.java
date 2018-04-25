@@ -123,14 +123,6 @@ public class PriorityScheduler extends Scheduler {
         return (ThreadState) thread.schedulingState;
     }
 
-    private static class ThreadHogger implements Runnable{
-        public int d = 0;
-        public void run() {
-            while(d==0){KThread.yield();}
-
-        }
-
-    }
 
 
     public static void selfTest(){
@@ -165,11 +157,11 @@ public class PriorityScheduler extends Scheduler {
         ThreadedKernel.scheduler.setPriority(thread2, 7);
         ThreadedKernel.scheduler.setPriority(thread3, 4);
 
-
+        Machine.interrupt().enable();
         thread1.fork();
         thread2.fork();
         thread3.fork();
-        Machine.interrupt().enable();
+
         KThread.yield();
         System.out.println("Priority TEST #2: END");
     }
@@ -251,7 +243,7 @@ public class PriorityScheduler extends Scheduler {
         }
 
         /**
-         * This method returns the effectivePriority of this PriorityQueue.
+         * This method returns the effectivePriority of this PriorityQueue.C
          * The return value is cached for as long as possible. If the cached value
          * has been invalidated, this method will spawn a series of mutually
          * recursive calls needed to recalculate effectivePriorities across the

@@ -111,6 +111,4 @@ public class Communicator {
     private int sound;
     private boolean boolWord;
 
-
-
 }
