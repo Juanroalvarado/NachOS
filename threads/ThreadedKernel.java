@@ -47,9 +47,9 @@ public class ThreadedKernel extends Kernel {
      * tests here.
      */	
     public void selfTest() {
-        PriorityScheduler.selfTest();
-        //KThread.selfTest();
         //alarm.selfTest();
+        //PriorityScheduler.selfTest();
+        //KThread.selfTest();
         Boat.selfTest();
         Semaphore.selfTest();
         SynchList.selfTest();

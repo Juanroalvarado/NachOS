@@ -242,12 +242,12 @@ public class PriorityScheduler extends Scheduler {
             if (!this.transferPriority) {
                 return priorityMinimum;
             } else if (this.priorityChange) {
-                /*
+
                 this.effectivePriority = priorityMinimum;
                 for (final ThreadState curr : this.threadsWaiting) {
                     this.effectivePriority = Math.max(this.effectivePriority, curr.getEffectivePriority());
-                } */
-                this.effectivePriority = this.threadsWaiting.peek().getEffectivePriority();
+                }
+               // this.effectivePriority = this.threadsWaiting.peek().getEffectivePriority();
                 this.priorityChange = false;
             }
             return effectivePriority;
@@ -314,9 +314,7 @@ public class PriorityScheduler extends Scheduler {
             } else if (this.priorityChange) {
                 this.effectivePriority = this.priority;
                 for (final PriorityQueue pq : this.heldQueues) {
-                    if (this.effectivePriority < pq.getEffectivePriority()){
-                        this.effectivePriority = pq.getEffectivePriority();
-                    }
+                    this.effectivePriority = Math.max(this.effectivePriority, pq.getEffectivePriority());
                 }
                 this.priorityChange = false;
             }

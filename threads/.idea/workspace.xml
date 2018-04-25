@@ -11,11 +11,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Boat.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Boat.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Boat.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="161" column="5" lean-forward="true" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
+            <state relative-caret-position="78">
+              <caret line="172" column="5" lean-forward="true" selection-start-line="172" selection-start-column="5" selection-end-line="172" selection-end-column="5" />
               <folding>
                 <element signature="e#1294#1295#0" expanded="true" />
                 <element signature="e#1342#1343#0" expanded="true" />
@@ -26,11 +26,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThreadedKernel.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ThreadedKernel.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ThreadedKernel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+            <state relative-caret-position="303">
+              <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Alarm.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Alarm.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="363">
+              <caret line="133" column="39" lean-forward="true" selection-start-line="133" selection-start-column="39" selection-end-line="133" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -47,8 +56,8 @@
       <file leaf-file-name="KThread.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/KThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="104" column="25" selection-start-line="104" selection-start-column="18" selection-end-line="104" selection-end-column="25" />
+            <state relative-caret-position="306">
+              <caret line="427" column="5" lean-forward="true" selection-start-line="427" selection-start-column="5" selection-end-line="427" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -56,13 +65,13 @@
       <file leaf-file-name="PriorityScheduler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PriorityScheduler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="200" column="8" lean-forward="true" selection-start-line="200" selection-start-column="8" selection-end-line="200" selection-end-column="8" />
+            <state relative-caret-position="93">
+              <caret line="131" column="54" lean-forward="true" selection-start-line="131" selection-start-column="7" selection-end-line="131" selection-end-column="54" />
               <folding>
-                <element signature="e#4318#4319#0" expanded="true" />
-                <element signature="e#4388#4389#0" expanded="true" />
-                <element signature="e#13097#13098#0" expanded="true" />
-                <element signature="e#13134#13135#0" expanded="true" />
+                <element signature="e#4313#4314#0" expanded="true" />
+                <element signature="e#4383#4384#0" expanded="true" />
+                <element signature="e#12895#12896#0" expanded="true" />
+                <element signature="e#12932#12933#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -72,7 +81,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>finish</find>
       <find>waitqueue</find>
       <find>compareto</find>
       <find>threadstate</find>
@@ -102,19 +110,20 @@
       <find>priority</find>
       <find>resourcesihave</find>
       <find>resourcesIWant</find>
+      <find>ChildrenOnMolokai</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Alarm.java" />
-        <option value="$PROJECT_DIR$/KThread.java" />
         <option value="$PROJECT_DIR$/Condition2.java" />
         <option value="$PROJECT_DIR$/Communicator.java" />
         <option value="$PROJECT_DIR$/boat2.java" />
         <option value="$PROJECT_DIR$/PriorityScheduler.java" />
-        <option value="$PROJECT_DIR$/ThreadedKernel.java" />
+        <option value="$PROJECT_DIR$/Alarm.java" />
+        <option value="$PROJECT_DIR$/KThread.java" />
         <option value="$PROJECT_DIR$/Boat.java" />
+        <option value="$PROJECT_DIR$/ThreadedKernel.java" />
       </list>
     </option>
   </component>
@@ -129,6 +138,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -140,9 +150,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="AndroidView" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -256,6 +265,53 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Boat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2415">
+          <caret line="161" column="5" lean-forward="true" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
+          <folding>
+            <element signature="e#1294#1295#0" expanded="true" />
+            <element signature="e#1342#1343#0" expanded="true" />
+            <element signature="e#1434#1435#0" expanded="true" />
+            <element signature="e#1482#1483#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ThreadedKernel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Communicator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1425">
+          <caret line="95" column="11" selection-start-line="95" selection-start-column="11" selection-end-line="95" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/KThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1530">
+          <caret line="104" column="25" selection-start-line="104" selection-start-column="18" selection-end-line="104" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PriorityScheduler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2880">
+          <caret line="200" column="8" lean-forward="true" selection-start-line="200" selection-start-column="8" selection-end-line="200" selection-end-column="8" />
+          <folding>
+            <element signature="e#4313#4314#0" expanded="true" />
+            <element signature="e#4383#4384#0" expanded="true" />
+            <element signature="e#12895#12896#0" expanded="true" />
+            <element signature="e#12932#12933#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Boat.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1605">
@@ -508,13 +564,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Alarm.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="95" column="13" lean-forward="true" selection-start-line="95" selection-start-column="13" selection-end-line="95" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/boat2.java" />
     <entry file="file://$PROJECT_DIR$/Condition2.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -523,10 +572,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/KThread.java">
+    <entry file="file://$PROJECT_DIR$/PriorityScheduler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="104" column="25" selection-start-line="104" selection-start-column="18" selection-end-line="104" selection-end-column="25" />
+        <state relative-caret-position="93">
+          <caret line="131" column="54" lean-forward="true" selection-start-line="131" selection-start-column="7" selection-end-line="131" selection-end-column="54" />
+          <folding>
+            <element signature="e#4313#4314#0" expanded="true" />
+            <element signature="e#4383#4384#0" expanded="true" />
+            <element signature="e#12895#12896#0" expanded="true" />
+            <element signature="e#12932#12933#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -537,36 +592,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PriorityScheduler.java">
+    <entry file="file://$PROJECT_DIR$/KThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="200" column="8" lean-forward="true" selection-start-line="200" selection-start-column="8" selection-end-line="200" selection-end-column="8" />
-          <folding>
-            <element signature="e#4318#4319#0" expanded="true" />
-            <element signature="e#4388#4389#0" expanded="true" />
-            <element signature="e#13097#13098#0" expanded="true" />
-            <element signature="e#13134#13135#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="306">
+          <caret line="427" column="5" lean-forward="true" selection-start-line="427" selection-start-column="5" selection-end-line="427" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ThreadedKernel.java">
+    <entry file="file://$PROJECT_DIR$/Alarm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="363">
+          <caret line="133" column="39" lean-forward="true" selection-start-line="133" selection-start-column="39" selection-end-line="133" selection-end-column="39" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Boat.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="161" column="5" lean-forward="true" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
+        <state relative-caret-position="78">
+          <caret line="172" column="5" lean-forward="true" selection-start-line="172" selection-start-column="5" selection-end-line="172" selection-end-column="5" />
           <folding>
             <element signature="e#1294#1295#0" expanded="true" />
             <element signature="e#1342#1343#0" expanded="true" />
             <element signature="e#1434#1435#0" expanded="true" />
             <element signature="e#1482#1483#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ThreadedKernel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
         </state>
       </provider>
     </entry>

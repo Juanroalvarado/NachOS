@@ -32,8 +32,8 @@ public class Boat
         int ChildrenOnOahu = 0;
         int AdultsOnOahu = 0;
 
-        int AdultsOnMolokai = 0;
-        int ChildrenOnMolokai = 0;
+        AdultsOnMolokai = 0;
+        ChildrenOnMolokai = 0;
 
         boat = new Lock();
         AdultAtOahu = new Condition2(boat);
@@ -68,10 +68,17 @@ public class Boat
             Adult.setName("Adult " + i).fork();
         }
 
+        boat.acquire();
+        while(!done(ChildrenOnMolokai,AdultsOnMolokai)){
+            ChildAtMolokai.wake();
+            mainCondition.sleep();
 
+        }
+        finished = true;
+        ChildAtMolokai.wakeAll();
+        ChildAtOahu.wakeAll();
 
-
-
+        boat.release();
     }
 
     static void AdultItinerary()
@@ -111,7 +118,7 @@ public class Boat
         boat.acquire();
         ChildrenOnOahu +=1;
 
-        while (allAdults + allChilds > ChildrenOnMolokai + AdultsOnMolokai){
+        while (!finished){
 
             if (atOahu && ChildrenOnOahu > 1){
 
@@ -123,6 +130,9 @@ public class Boat
                     atOahu = false;
                     ChildrenOnMolokai += 2;
                     travelling = false;
+                    /** Check for finality */
+                    mainCondition.wake();
+                    ChildAtMolokai.sleep();
 
                 } else {
                     //System.out.println(KThread.currentThread().getName() + " rowing to Molokai");
@@ -145,24 +155,15 @@ public class Boat
                 ChildAtOahu.sleep();
 
             }
-            /*
-            if (ChildrenOnMolokai + AdultsOnMolokai != adults + children) {
-                mainCondition.wake();
-            }
-            */
         }
-
         /** vuelve el estado de boat en false*/
         //AdultAtOahu.wakeAll();
-        ChildAtMolokai.wakeAll();
-        ChildAtOahu.wakeAll();
-        mainCondition.wake();
         boat.release();
-        System.out.println("Everyone is in molokai ");
+
     }
 
-    public static boolean done(int allChilds, int allAdults){
-        if (allAdults + allChilds > ChildrenOnMolokai + AdultsOnMolokai && !atOahu)
+    public static boolean done(int ChildrenOnMolokai, int AdultsOnMolokai){
+        if (allAdults == AdultsOnMolokai && allChilds == ChildrenOnMolokai && !atOahu)
             return true;
         else
             return false;
@@ -191,12 +192,13 @@ public class Boat
     private static Condition2 mainCondition ;
 
     private static int ChildrenOnOahu;
-    private static int ChildrenOnMolokai;
+    public static int ChildrenOnMolokai;
     private static int AdultsOnOahu;
-    private static int AdultsOnMolokai;
+    public static int AdultsOnMolokai;
 
     private static boolean atOahu = true;
     private static boolean travelling = false;
+    private static boolean finished = false;
 
     public static int allChilds;
     public static int allAdults;

@@ -433,6 +433,7 @@ public class KThread {
 
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
+	System.out.println("KThread TEST: START");
 	// Aqui le agregamos una variable al ping test con el Wait time,
 	// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
 	KThread t1 = new KThread(new PingTest(1));
