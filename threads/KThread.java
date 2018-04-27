@@ -188,15 +188,15 @@ public class KThread {
 	
 	Machine.interrupt().disable();
 
-	JoinQueue = currentThread.JoinQueue;
+	ThreadQueue joinQueue = currentThread.JoinQueue;
 	
-	if (JoinQueue != null ){
-		KThread q = JoinQueue.nextThread();
+	if (joinQueue != null ){
+		KThread q = joinQueue.nextThread();
 		while (q != null) {
 			q.ready();
 			//currentThread.JoinQueue.acquire(q); 		
-			q = JoinQueue.nextThread();
-			JoinQueue.print();
+			q = joinQueue.nextThread();
+			joinQueue.print();
 		}
 	}
 	
@@ -293,12 +293,12 @@ public class KThread {
 
 	Machine.interrupt().disable();
 
-	if (JoinQueue == null ){
-		JoinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
-	    	JoinQueue.acquire(this);
+	if (this.JoinQueue == null ){
+		this.JoinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
+		this.JoinQueue.acquire(this);
 	}	
 	if (status != statusFinished){
-		JoinQueue.waitForAccess(currentThread);
+		this.JoinQueue.waitForAccess(currentThread);
 		currentThread.sleep();
 	}
 
@@ -410,45 +410,113 @@ public class KThread {
 	Lib.assertTrue(this == currentThread);
     }
 
-    private static class PingTest implements Runnable {
-	PingTest(int which) {
-	    this.which = which;
+
+
+	private static class PingTest implements Runnable {
+		PingTest(int which) {
+			this.which = which;
+		}
+
+		public void run() {
+			for (int i=0; i<5; i++) {
+				System.out.println("*** thread " + which + " looped " + i + " times, Tick:" + Machine.timer().getTime());
+				/**
+				if ((which == 3) && (i==0))
+
+					ThreadedKernel.alarm.waitUntil(5000);
+				 */
+				if ((which == 1) && (i==0))
+					//System.out.println("*** thread " + which + " waitint");
+					ThreadedKernel.alarm.waitUntil(1000);
+				if ((which == 1) && (i==1))
+					dos.join();
+				if ((which == 0) && (i==2))
+					dos.join();
+				if ((which == 2) && (i==3))
+					tres.join();
+				if ((which == 1) && (i==3))
+					dos.join();
+				if (AlarmTest) {
+					if ((which==2) && (i==0)) {
+						long time=1080;
+						System.out.println("** "+dos.getName()+" esperara al menos "+time+" ticks, despertara aprox. en "+(Machine.timer().getTime()+time));
+						ThreadedKernel.alarm.waitUntil(time);
+					}
+					if ((which==3) && (i==1)) {
+						long time=540;
+						System.out.println("** "+tres.getName()+" esperara al menos "+time+" ticks, despertara aprox. en "+(Machine.timer().getTime()+time));
+						ThreadedKernel.alarm.waitUntil(time);
+					}
+				}
+				currentThread.yield();
+			}
+		}
+
+		private int which;
 	}
-	
-	public void run() {
-	    for (int i=0; i<5; i++) {
-		System.out.println("*** thread " + which + " looped "
-				   + i + " times");
-		
-		currentThread.yield();
-	    }
+
+
+	public static void selfTest() {
+		Lib.debug(dbgThread, "Enter KThread.selfTest");
+
+		cero = new KThread(new PingTest(0)).setName("forked thread0");
+		cero.fork();
+
+		uno = new KThread(new PingTest(1)).setName("forked thread1");
+		uno.fork();
+
+		dos = new KThread(new PingTest(2)).setName("forked thread2");
+		dos.fork();
+
+		tres = new KThread(new PingTest(3)).setName("forked thread3");
+		tres.fork();
+
+		cero.join();
+		uno.join();
+		dos.join();
+		tres.join();
+
 	}
 
-	private int which;
-    }
+	public static boolean AlarmTest = false;
+	public static KThread tres = null;
+	public static KThread uno = null;
+	public static KThread dos = null;
+	public static KThread cero = null;
 
- 
+	/**
+	public static void selfTest() {
+		Lib.debug(dbgThread, "Enter Communicator.selfTest");
 
-    /** Tests join */
+		final Communicator com = new Communicator();
 
-    public static void selfTest() {
-	Lib.debug(dbgThread, "Enter KThread.selfTest");
-	System.out.println("KThread TEST: START");
-	// Aqui le agregamos una variable al ping test con el Wait time,
-	// podemos ver que hara el ping test en orden de menor timepo a mayor tiempo
-	KThread t1 = new KThread(new PingTest(1));
-	KThread t2 = new KThread(new PingTest(2));
-	KThread t3 = new KThread(new PingTest(3));
-	
-	t1.fork();
-	t1.join();
-	t2.fork();
-	t2.join();
-	t3.fork();
-	
-    }
+		for(int i = 0; i < 6; i++){
 
-    private static final char dbgThread = 't';
+			Runnable speakWord = new Runnable(){
+				public void run() {
+					System.out.println("Thread -- Start/Speaking");
+					com.speak(i);
+					System.out.println("Thread -- Finish/Speaking");
+				}
+			};
+			Runnable listenWord = new Runnable(){
+				public void run() {
+					System.out.println("Thread -- Start/Listening");
+					com.listen();
+					System.out.println("Thread -- Finish/Listening");
+				}
+			};
+			KThread speak = Kthread(speakWord);
+			speak.fork();
+			KThread listen = Kthread(listenWord);
+			listen.fork();
+		}
+	}
+
+	*/
+
+
+	private static final char dbgThread = 't';
 
     /**
      * Additional state used by schedulers.
@@ -483,7 +551,7 @@ public class KThread {
     private static int numCreated = 0;
 
     /** Crear un joinQueue */
-    private static ThreadQueue JoinQueue = null;
+    private ThreadQueue JoinQueue = null;
 
     /** variables de waitUnitl */
 

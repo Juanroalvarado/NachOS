@@ -14,8 +14,8 @@ public class Communicator {
      */
     public Communicator() {
 		conditionLock = new Lock();
-		listener = new Condition2(conditionLock);
-		speaker = new Condition2(conditionLock);
+		listener = new Condition(conditionLock);
+		speaker = new Condition(conditionLock);
     
     }
 
@@ -35,7 +35,7 @@ public class Communicator {
 		speakers += 1;
 
 		while (boolWord == true || listeners < 1) {
-            System.out.println("Speaker sleeps");
+            //System.out.println("Speaker sleeps");
 			speaker.sleep();
 		}
 		// speaker says word
@@ -63,7 +63,7 @@ public class Communicator {
 
 			speaker.wakeAll();
 			listener.sleep();
-            System.out.println("Listener sleeps");
+            //System.out.println("Listener sleeps");
 		}
 
 		//listener receives word
@@ -74,38 +74,12 @@ public class Communicator {
 		return word;
     }
 
-	public static void selfTest() {
-        Lib.debug(dbgThread, "Enter Communicator.selfTest");
-
-		final Communicator com = new Communicator();
-
-		KThread thread1 = new KThread(new Runnable() {
-			public void run() {
-				System.out.println("Thread 1 -- Start/Speaking");
-				com.speak(0);
-				System.out.println("Thread 1 -- Finish/Speaking");
-			}
-		});
-
-		KThread thread2 = new KThread(new Runnable() {
-			public void run() {
-				System.out.println("Thread 2 -- Start/Listening");
-				com.listen();
-				System.out.println("Thread 2 -- Finish/Listening");
-			}
-		});
-
-		thread1.fork();
-		thread2.fork();
-		//thread1.join();
-		//thread2.join();
-	}
 
     private static final char dbgThread = 't';
 
     private Lock conditionLock;
-    private Condition2 listener;
-    private Condition2 speaker;
+    private Condition listener;
+    private Condition speaker;
     private int listeners;
     private int speakers;
     private int sound;

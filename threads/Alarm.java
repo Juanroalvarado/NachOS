@@ -30,9 +30,11 @@ public class Alarm {
 		Lib.assertTrue(Machine.interrupt().disabled());
 
 		long curTime = Machine.timer().getTime();
-
+		System.out.println("check time:" + curTime);
 		while(!waitQueue.isEmpty() && waitQueue.peek().time <= curTime){
+
 			if (waitQueue.peek().time <= curTime){
+				System.out.println("waking:" + curTime);
 				waitQueue.poll().thread.ready();
 			} else {
 				break;
@@ -61,13 +63,13 @@ public class Alarm {
      */
     public void waitUntil(long x) {
 		Machine.interrupt().disable();
-
+		//System.out.println("Sleep Tick:" + Machine.timer().getTime());
 		/**
 		* Crear un nuevo WaitThread con el currentThread y el X (waittime)
 		* agregar a priority Queue
 		*/
 		long upTime = Machine.timer().getTime() + x;
-
+		System.out.println("uptime :" + upTime);
 		WaitingThread wThread = new WaitingThread(KThread.currentThread(), upTime);
 
 		waitQueue.add(wThread);
