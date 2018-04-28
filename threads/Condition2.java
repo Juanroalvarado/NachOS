@@ -32,23 +32,22 @@ public class Condition2 {
      * automatically reacquire the lock before <tt>sleep()</tt> returns.
      */
     public void sleep() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
-	/** desahbilitar interrupciones */
-	Machine.interrupt().disable();
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+		/** desahbilitar interrupciones */
+		Machine.interrupt().disable();
 
-	/**  Agregar current thread al WaitQueue */
-	conditionLock.release();
+		/**  Agregar current thread al WaitQueue */
+		conditionLock.release();
 
-	waitQueue.add(KThread.currentThread());
+		waitQueue.add(KThread.currentThread());
 
-	
-	/**  poner thread a dormir */
-	KThread.sleep();	
+		/**  poner thread a dormir */
+		KThread.sleep();
 
-	conditionLock.acquire();
+		conditionLock.acquire();
 
-	/** habilitar interrupciones */
-	Machine.interrupt().enable();
+		/** habilitar interrupciones */
+		Machine.interrupt().enable();
     }
 
     /**
@@ -56,18 +55,18 @@ public class Condition2 {
      * current thread must hold the associated lock.
      */
     public void wake() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
-	/** deshabilitar interrupciones */
-	Machine.interrupt().disable();
+		/** deshabilitar interrupciones */
+		Machine.interrupt().disable();
 
-	if (!waitQueue.isEmpty()){
-		wakeup = waitQueue.removeFirst();
-		wakeup.ready();
-	}	
 
-	/** habilitar interrupciones */
-	Machine.interrupt().enable();
+		if (!waitQueue.isEmpty()){
+			waitQueue.pop().ready();
+		}
+
+		/** habilitar interrupciones */
+		Machine.interrupt().enable();
     }
 
     /**
@@ -76,10 +75,10 @@ public class Condition2 {
      */
     public void wakeAll() {
 	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
-	
+
 	while  (!waitQueue.isEmpty()) {
 		wake();
-	}	
+	}
 
 
     }

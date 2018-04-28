@@ -35,7 +35,8 @@ public class ThreadedKernel extends Kernel {
 	new KThread(null);
 
 	alarm  = new Alarm();
-	
+
+
 
 	Machine.interrupt().enable();
     }
@@ -49,10 +50,12 @@ public class ThreadedKernel extends Kernel {
     public void selfTest() {
         //alarm.selfTest();
         //PriorityScheduler.selfTest();
-        KThread.selfTest();
+        //KThread.selfTest();
+        CommunicatorTest commTest = new CommunicatorTest();
+        commTest.commTest(3,true);
         //Boat.selfTest();
-        Semaphore.selfTest();
-        SynchList.selfTest();
+        //Semaphore.selfTest();
+        //SynchList.selfTest();
         //Communicator.selfTest();
         if (Machine.bank() != null) {
             ElevatorBank.selfTest();
@@ -80,7 +83,10 @@ public class ThreadedKernel extends Kernel {
     /** Globally accessible reference to the file system. */
     public static FileSystem fileSystem = null;
 
+    private CommunicatorTest commTest = null;
+
     // dummy variables to make javac smarter
+
     private static RoundRobinScheduler dummy1 = null;
     private static PriorityScheduler dummy2 = null;
     private static LotteryScheduler dummy3 = null;

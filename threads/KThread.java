@@ -4,6 +4,8 @@ import nachos.machine.*;
 
 import java.util.Random;
 
+import java.util.ArrayList;
+
 /**
  * A KThread is a thread that can be used to execute Nachos kernel code. Nachos
  * allows multiple threads to run concurrently.
@@ -448,7 +450,8 @@ public class KThread {
 						ThreadedKernel.alarm.waitUntil(time);
 					}
 				}
-				currentThread.yield();
+				//currentThread.yield();
+
 			}
 		}
 
@@ -470,12 +473,12 @@ public class KThread {
 
 		tres = new KThread(new PingTest(3)).setName("forked thread3");
 		tres.fork();
-
+		/*
 		cero.join();
 		uno.join();
 		dos.join();
 		tres.join();
-
+		*/
 	}
 
 	public static boolean AlarmTest = false;
@@ -488,33 +491,56 @@ public class KThread {
 	public static void selfTest() {
 		Lib.debug(dbgThread, "Enter Communicator.selfTest");
 
+
 		final Communicator com = new Communicator();
 
-		for(int i = 0; i < 6; i++){
 
-			Runnable speakWord = new Runnable(){
-				public void run() {
-					System.out.println("Thread -- Start/Speaking");
+		Runnable listenWord = new Runnable(){
+			public void run() {
+				System.out.println("Thread -- Start/Listening");
+
+				System.out.println("Thread -- Heard: " +com.listen());
+			}
+		};
+
+
+		Runnable speakWord = new Runnable(){
+			public void run() {
+
+				for(int i = 0; i < 6; i++) {
+					System.out.println("SPeaker -- Start/Speaking");
 					com.speak(i);
-					System.out.println("Thread -- Finish/Speaking");
+					System.out.println("Speaker -- Said: "+ i);
+					System.out.println("speaker -- Finish/Speaking");
 				}
-			};
-			Runnable listenWord = new Runnable(){
-				public void run() {
-					System.out.println("Thread -- Start/Listening");
-					com.listen();
-					System.out.println("Thread -- Finish/Listening");
-				}
-			};
-			KThread speak = Kthread(speakWord);
-			speak.fork();
-			KThread listen = Kthread(listenWord);
-			listen.fork();
-		}
+			}
+		};
+
+		KThread speak = new KThread(speakWord);
+
+		KThread listen = new KThread(listenWord);
+		KThread listen2 = new KThread(listenWord);
+		KThread listen3 = new KThread(listenWord);
+		KThread listen4 = new KThread(listenWord);
+		KThread listen5 = new KThread(listenWord);
+		speak.fork();
+		listen.fork();
+		listen2.fork();
+		listen3.fork();
+		listen4.fork();
+		listen5.fork();
+
+
+		speak.join();
+		listen.join();
+		listen2.join();
+		listen3.join();
+		listen4.join();
+		listen5.join();
+
 	}
 
 	*/
-
 
 	private static final char dbgThread = 't';
 

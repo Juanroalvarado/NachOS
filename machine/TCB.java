@@ -82,6 +82,7 @@ public final class TCB {
 	 * runningThreads, and we save the target closure.
 	 */
 	runningThreads.add(this);
+	//System.out.println("number of threads: " + nachos.machine.TCB.runningThreads.size());
 
 	this.target = target;
 
