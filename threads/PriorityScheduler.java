@@ -210,7 +210,7 @@ public class PriorityScheduler extends Scheduler {
 
         });
 
-        //selfTestRun(t1, 7, t2, 4);
+        selfTestRun(t1, 7, t2, 4);
 
         /*
          * Case 2: Tests priority scheduler without donation, altering
@@ -259,7 +259,7 @@ public class PriorityScheduler extends Scheduler {
 
         });
 
-        //selfTestRun(t1, 7, t2, 4);
+        selfTestRun(t1, 7, t2, 4);
 
         /*
          * Case 3: Tests priority donation
@@ -384,21 +384,22 @@ public class PriorityScheduler extends Scheduler {
             boolean intStatus = Machine.interrupt().disable();
             //ensure priorityQueue is properly ordered
             java.util.PriorityQueue<ThreadState> viewQ = new java.util.PriorityQueue<ThreadState>(threadsWaiting);
-
+            /*
             System.out.println("~~Starting Queue Loop***");
             while(!viewQ.isEmpty()){
                 ThreadState nextThread = viewQ.poll();
                 System.out.println("**ThreadN : " + nextThread.getThread().getName());
+                System.out.println("** P: " + nextThread.priority);
                 System.out.println("** EP: " + nextThread.effectivePriority);
                 System.out.println("**Life : " + nextThread.life);
 
             }
             System.out.println("~~ENding Queue Loop***");
-
+            */
             this.threadsWaiting = new java.util.PriorityQueue<ThreadState>(threadsWaiting);
 
             Machine.interrupt().restore(intStatus);
-            return this.threadsWaiting.poll();
+            return this.threadsWaiting.peek();
         }
 
         /**
@@ -566,7 +567,7 @@ public class PriorityScheduler extends Scheduler {
          */
         public void release(PriorityQueue waitQueue) {
             this.resourcesIHave.remove(waitQueue);
-
+            this.setEP();
         }
 
         public KThread getThread() {
@@ -581,7 +582,6 @@ public class PriorityScheduler extends Scheduler {
                 return -1;
             }
             else {
-                System.out.println("Compare by time");
                 if (this.life > secondThreadState.life){
                     return 1;
                 }

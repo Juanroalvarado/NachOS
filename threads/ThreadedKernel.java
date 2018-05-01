@@ -49,11 +49,11 @@ public class ThreadedKernel extends Kernel {
      */	
     public void selfTest() {
         //alarm.selfTest();
-        PriorityScheduler.selfTest();
+        //PriorityScheduler.selfTest();
         //KThread.selfTest();
         //CommunicatorTest commTest = new CommunicatorTest();
         //commTest.commTest(3,true);
-        //Boat.selfTest();
+        Boat.selfTest();
         //Semaphore.selfTest();
         //SynchList.selfTest();
         //Communicator.selfTest();
