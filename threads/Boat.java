@@ -7,10 +7,9 @@ public class Boat
 
     public static void selfTest()
     {
-	BoatGrader b = new BoatGrader();
+        BoatGrader b = new BoatGrader();
 
-	System.out.println("\n ***Testing Boats with adult 1 and child 2***");
-	begin(1, 2, b);
+        begin(1, 4, b);
 
 //	System.out.println("\n ***Testing Boats with 2 children, 1 adult***");
 //  	begin(1, 2, b);
@@ -21,14 +20,16 @@ public class Boat
 
     public static void begin( int adults, int children, BoatGrader b )
     {
-	// Store the externally generated autograder in a class
-	// variable to be accessible by children.
-	    bg = b;
+        System.out.println("\n ***Testing Boats with adult "+adults+" and child "+children+"***");
+
+        // Store the externally generated autograder in a class
+        // variable to be accessible by children.
+        bg = b;
 
         allAdults = adults;
         allChilds = children;
 
-	// Instantiate global variables here
+        // Instantiate global variables here
         int ChildrenOnOahu = 0;
         int AdultsOnOahu = 0;
 
@@ -43,7 +44,7 @@ public class Boat
 
 
         // Create threads here. See section 3.4 of the Nachos for Java
-	// Walkthrough linked from the projects page.
+        // Walkthrough linked from the projects page.
 
         Runnable AdultRunner = new Runnable() {
             public void run() {
@@ -70,15 +71,21 @@ public class Boat
 
         boat.acquire();
         while(!done(ChildrenOnMolokai,AdultsOnMolokai)){
-            ChildAtMolokai.wake();
             mainCondition.sleep();
-
         }
         finished = true;
         ChildAtMolokai.wakeAll();
         ChildAtOahu.wakeAll();
 
         boat.release();
+    }
+
+    public static boolean done(int ChildrenOnMolokai, int AdultsOnMolokai){
+        //System.out.println("Audlts arrived: " + AdultsOnMolokai + " Children arrived: " + ChildrenOnMolokai);
+        if (allAdults == AdultsOnMolokai && allChilds == ChildrenOnMolokai && !atOahu)
+            return true;
+        else
+            return false;
     }
 
     static void AdultItinerary()
@@ -94,19 +101,17 @@ public class Boat
         boat.acquire();
         AdultsOnOahu += 1;
 
-        while (!atOahu || ChildrenOnOahu > 1){
-            ChildAtOahu.wake();
+        while (!atOahu || ChildrenOnOahu != 1){
             AdultAtOahu.sleep();
         }
 
         AdultsOnOahu -= 1;
-        //System.out.println(KThread.currentThread().getName() + " rowing to molokai");
-        bg.AdultRowToMolokai();
+        System.out.println(KThread.currentThread().getName() + " rowing to molokai");
+        //bg.AdultRowToMolokai();
 
         /** vuelve el estado de boat en false*/
         atOahu = false;
         AdultsOnMolokai += 1;
-
         ChildAtMolokai.wake();
         boat.release();
     }
@@ -120,37 +125,45 @@ public class Boat
 
         while (!finished){
 
-            if (atOahu && ChildrenOnOahu > 1){
+            if (atOahu && ChildrenOnOahu > 1 ){
 
                 if (travelling){
 
                     ChildrenOnOahu -= 2;
-                    //System.out.println(KThread.currentThread().getName() + " riding to Molokai as passenger");
-                    bg.ChildRideToMolokai();
+                    System.out.println(KThread.currentThread().getName() + " riding to Molokai as passenger");
+                    //bg.ChildRideToMolokai();
                     atOahu = false;
                     ChildrenOnMolokai += 2;
                     travelling = false;
                     /** Check for finality */
-                    mainCondition.wake();
-                    ChildAtMolokai.sleep();
+
+                    if(done(ChildrenOnMolokai,AdultsOnMolokai)){
+                        mainCondition.wake();
+                        finished = true;
+                    }
 
                 } else {
-                    //System.out.println(KThread.currentThread().getName() + " rowing to Molokai");
-                    bg.ChildRowToMolokai();
+                    System.out.println(KThread.currentThread().getName() + " rowing to Molokai");
+                    //bg.ChildRowToMolokai();
                     travelling = true;
                     ChildAtOahu.wake();
                     ChildAtMolokai.sleep();
+
                 }
 
             }
             else if (!atOahu) {
-                //System.out.println(KThread.currentThread().getName() + " rowing to Oahu");
+
+                System.out.println(KThread.currentThread().getName() + " rowing to Oahu");
                 ChildrenOnMolokai -= 1;
-                bg.ChildRowToOahu();
+                //bg.ChildRowToOahu();
                 atOahu = true;
                 ChildrenOnOahu += 1;
+                //AdultAtOahu.wake();
+
             }
             else {
+
                 AdultAtOahu.wake();
                 ChildAtOahu.sleep();
 
@@ -162,24 +175,19 @@ public class Boat
 
     }
 
-    public static boolean done(int ChildrenOnMolokai, int AdultsOnMolokai){
-        if (allAdults == AdultsOnMolokai && allChilds == ChildrenOnMolokai && !atOahu)
-            return true;
-        else
-            return false;
-    }
+
 
     static void SampleItinerary()
     {
-	// Please note that this isn't a valid solution (you can't fit
-	// all of them on the boat). Please also note that you may not
-	// have a single thread calculate a solution and then just play
-	// it back at the autograder -- you will be caught.
-	System.out.println("\n ***Everyone piles on the boat and goes to Molokai***");
-	bg.AdultRowToMolokai();
-	bg.ChildRideToMolokai();
-	bg.AdultRideToMolokai();
-	bg.ChildRideToMolokai();
+        // Please note that this isn't a valid solution (you can't fit
+        // all of them on the boat). Please also note that you may not
+        // have a single thread calculate a solution and then just play
+        // it back at the autograder -- you will be caught.
+        System.out.println("\n ***Everyone piles on the boat and goes to Molokai***");
+        bg.AdultRowToMolokai();
+        bg.ChildRideToMolokai();
+        bg.AdultRideToMolokai();
+        bg.ChildRideToMolokai();
 
     }
 

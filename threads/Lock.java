@@ -59,6 +59,7 @@ public class Lock {
 	boolean intStatus = Machine.interrupt().disable();
 
 	if ((lockHolder = waitQueue.nextThread()) != null)
+		System.out.println("GET THE STRAP " + lockHolder.getName());
 	    lockHolder.ready();
 	
 	Machine.interrupt().restore(intStatus);

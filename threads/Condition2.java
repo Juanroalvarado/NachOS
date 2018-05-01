@@ -42,6 +42,7 @@ public class Condition2 {
 		waitQueue.add(KThread.currentThread());
 
 		/**  poner thread a dormir */
+		//System.out.println(KThread.currentThread().getName() + " sleeping***");
 		KThread.sleep();
 
 		conditionLock.acquire();
@@ -62,6 +63,7 @@ public class Condition2 {
 
 
 		if (!waitQueue.isEmpty()){
+			//System.out.println(waitQueue.peek().getName() + " waking***");
 			waitQueue.pop().ready();
 		}
 
