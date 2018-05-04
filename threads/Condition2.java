@@ -76,17 +76,20 @@ public class Condition2 {
      * thread must hold the associated lock.
      */
     public void wakeAll() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
-	while  (!waitQueue.isEmpty()) {
-		wake();
-	}
-
-
+		while  (!waitQueue.isEmpty()) {
+			wake();
+		}
     }
 
 
-    private Lock conditionLock;
+
+
+
+
+
+	private Lock conditionLock;
     private LinkedList<KThread> waitQueue;
     private KThread wakeup;
 }

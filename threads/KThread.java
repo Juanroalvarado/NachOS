@@ -32,6 +32,7 @@ import java.util.ArrayList;
  * </pre></blockquote>
  */
 public class KThread {
+
     /**
      * Get the current thread.
      *
@@ -41,7 +42,7 @@ public class KThread {
 	Lib.assertTrue(currentThread != null);
 	return currentThread;
     }
-    
+
     /**
      * Allocate a new <tt>KThread</tt>. If this is the first <tt>KThread</tt>,
      * create an idle thread as well.
@@ -51,8 +52,8 @@ public class KThread {
 	    tcb = new TCB();
 	}	    
 	else {
-	    readyQueue = ThreadedKernel.scheduler.newThreadQueue(false);
-	    readyQueue.acquire(this);	    
+	    readyQueue = ThreadedKernel.scheduler.newThreadQueue(true);
+	    readyQueue.acquire(this);
 
 	    currentThread = this;
 	    tcb = TCB.currentTCB();
@@ -473,12 +474,12 @@ public class KThread {
 
 		tres = new KThread(new PingTest(3)).setName("forked thread3");
 		tres.fork();
-		/*
+
 		cero.join();
 		uno.join();
 		dos.join();
 		tres.join();
-		*/
+
 	}
 
 	public static boolean AlarmTest = false;

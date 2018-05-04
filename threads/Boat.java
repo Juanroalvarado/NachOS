@@ -163,10 +163,8 @@ public class Boat
 
             }
             else {
-
                 AdultAtOahu.wake();
                 ChildAtOahu.sleep();
-
             }
         }
         /** vuelve el estado de boat en false*/

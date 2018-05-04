@@ -41,7 +41,7 @@ public class Communicator {
 		// speaker says word
 		wordOut = true;
 		listener.wake();
-		this.spokenWord = word;
+		spokenWord = word;
 		speakers -= 1;
 
 		wordLock.release();
@@ -70,57 +70,14 @@ public class Communicator {
 		//listener receives word
 		wordOut = false;
 		listening = false;
-        int message = this.spokenWord;
+        int message = spokenWord;
 		listeners -= 1;
 
 		speaker.wake();
 		wordLock.release();
-
 		return message;
     }
 
-	public static void selfTest() {
-		Lib.debug(dbgThread, "Enter Communicator.selfTest");
-
-
-		final Communicator com = new Communicator();
-
-
-		Runnable listenWord = new Runnable(){
-			public void run() {
-				System.out.println("Thread -- Heard: " +com.listen());
-			}
-		};
-
-
-		Runnable speakWord = new Runnable(){
-			public void run() {
-
-				for(int i = 0; i < 5; i++) {
-					com.speak(i);
-
-				}
-			}
-		};
-
-		KThread speak = new KThread(speakWord);
-
-		KThread listen = new KThread(listenWord);
-		KThread listen2 = new KThread(listenWord);
-		KThread listen3 = new KThread(listenWord);
-		KThread listen4 = new KThread(listenWord);
-		KThread listen5 = new KThread(listenWord);
-
-		speak.setName("speaker").fork();
-		listen.setName("listen1").fork();
-		listen2.setName("listen2").fork();
-		listen3.setName("listen3").fork();
-		listen4.setName("listen4").fork();
-
-
-		listen4.join();
-
-	}
 
 
     private static final char dbgThread = 't';

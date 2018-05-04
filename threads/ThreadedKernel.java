@@ -49,11 +49,14 @@ public class ThreadedKernel extends Kernel {
      */	
     public void selfTest() {
         //alarm.selfTest();
-        //PriorityScheduler.selfTest();
+        PriorityScheduler.selfTest();
         //KThread.selfTest();
         //CommunicatorTest commTest = new CommunicatorTest();
-        //commTest.commTest(3,true);
-        Boat.selfTest();
+        //commTest.commTest(1,true);
+        //maquina maqTest = new maquina();
+        //maqTest.selfTest();
+
+        //Boat.selfTest();
         //Semaphore.selfTest();
         //SynchList.selfTest();
         //Communicator.selfTest();
@@ -84,6 +87,7 @@ public class ThreadedKernel extends Kernel {
     public static FileSystem fileSystem = null;
 
     private CommunicatorTest commTest = null;
+    private maquina maqTest = null;
 
     // dummy variables to make javac smarter
 

@@ -143,6 +143,9 @@ public class Alarm {
 		t1.fork();
 		t2.fork();
 		t3.fork();
+		t1.join();
+		t2.join();
+		t3.join();
     }
 	
    private static final char dbgThread = 't';
